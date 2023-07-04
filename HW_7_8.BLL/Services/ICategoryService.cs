@@ -6,14 +6,14 @@ namespace HW_7_8.BLL.Services
 {
     public interface ICategoryService
     {
-        public IEnumerable<Category> GetAllByUserId(string userId);
+        public Task<IEnumerable<Category>> GetAllByUserIdAsync(string userId);
 
-        public CategoryDataModel GetCategoryById(int id);
+        public Task<CategoryDataModel> GetCategoryByIdAsync(int id);
 
-        public void Add(CategoryDataModel category, IdentityUser user);
+        public Task<int> AddAsync(CategoryDataModel category, IdentityUser user);
 
-        public void Edit(CategoryDataModel newCategory);
+        public Task UpdateAsync(CategoryDataModel newCategory);
 
-        public void Delete(int id);
+        public Task DeleteAsync(int id);
     }
 }

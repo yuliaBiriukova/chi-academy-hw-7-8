@@ -5,6 +5,7 @@ using HW_7_8.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using System.Globalization;
 using System.Security.Claims;
 
@@ -16,50 +17,60 @@ namespace HW_7_8.Controllers
     {
         private readonly IMapper _mapper;
         private readonly IExpenseService _expenseService;
+        private readonly ICategoryService _categoryService;
         private readonly UserManager<IdentityUser> _userManager;
 
-        public ExpensesController(IMapper mapper, IExpenseService expenseService, UserManager<IdentityUser> userManager)
+        public ExpensesController(IMapper mapper, IExpenseService expenseService, ICategoryService categoryService, UserManager<IdentityUser> userManager)
         {
             _mapper = mapper;
             _expenseService = expenseService;
+            _categoryService = categoryService;
             _userManager = userManager;
         }
 
-        [Route("")]
-        [Route("/")]
-        public IActionResult Index()
+        [Route("", Order = 1)]
+        [Route("/", Order = 2)]
+        [HttpGet]
+        public async Task<IActionResult> Index()
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var expenses = _expenseService.GetCurrentByUserId(userId);
-            ExpensesEnumerableViewModel model = _mapper.Map<ExpensesEnumerableViewModel>(expenses);
+            var expenses = await _expenseService.GetCurrentByUserIdAsync(userId);
+            var model = _mapper.Map<ExpensesEnumerableViewModel>(expenses);
             return View(model);
         }
 
         [HttpGet("by-month")]
-        public IActionResult MonthExpenses(string monthName, int year)
+        public async Task<IActionResult> MonthExpenses(string monthName, int year)
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var expenses = _expenseService.GetByMonth(userId, monthName, year);
-            ExpensesEnumerableViewModel model = _mapper.Map<ExpensesEnumerableViewModel>(expenses);
+            var expenses = await _expenseService.GetByMonthAsync(userId, monthName, year);
+            var model = _mapper.Map<ExpensesEnumerableViewModel>(expenses);
             return View(model);
         }
 
         [HttpGet("new")]
-        public IActionResult Add()
+        public async Task<IActionResult> Add()
         {
-            return View();
+            var model = new ExpenseAddViewModel();
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var userCategories = await _categoryService.GetAllByUserIdAsync(userId);
+            if (userCategories != null)
+            {
+                model.CategoriesSelectList = _mapper.Map<IEnumerable<SelectListItem>>(userCategories);
+            }
+            return View(model);
         }
 
         [HttpPost("new")]
         public async Task<IActionResult> Add(ExpenseAddViewModel model)
         {
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var user = await _userManager.FindByIdAsync(userId);
-
             if (ModelState.IsValid)
             {
+                var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                var user = await _userManager.FindByIdAsync(userId);
+
                 var expense = _mapper.Map<ExpenseAddModel>(model);
-                _expenseService.Add(expense, user);
+                var newExpenseId = await _expenseService.AddAsync(expense, user);
 
                 var dateCreated = (DateTime)model.DateCreated;
                 var monthName = CultureInfo.InvariantCulture.DateTimeFormat.GetMonthName(dateCreated.Month);
@@ -72,37 +83,38 @@ namespace HW_7_8.Controllers
         }
 
         [HttpGet("{id:int}")]
-        public IActionResult Edit(int id) 
+        public async Task<IActionResult> Update(int id) 
         {
-            var expense = _expenseService.GetById(id);
-            ExpenseEditViewModel model = new ExpenseEditViewModel()
+            var expense = await _expenseService.GetByIdAsync(id);
+            var model = _mapper.Map<ExpenseUpdateViewModel>(expense);
+            model.ReturnUrl = Request.Headers["Referer"].ToString();
+
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var userCategories = await _categoryService.GetAllByUserIdAsync(userId);
+
+            if (userCategories != null)
             {
-                Id = expense.Id,
-                Cost = expense.Cost,
-                Comment = expense.Comment,
-                DateCreated = expense.DateCreated,
-                SelectedCategoryId = expense.ExpenseCategory.Id.ToString(),
-                ReturnUrl = Request.Headers["Referer"].ToString()
-            };
+                model.CategoriesSelectList = _mapper.Map<IEnumerable<SelectListItem>>(userCategories);
+            }
             return View(model);
         }
 
         [HttpPost("{id:int}")]
-        public IActionResult Edit(ExpenseEditViewModel model)
+        public async Task<IActionResult> Update(ExpenseUpdateViewModel model)
         {
             if(ModelState.IsValid)
             {
                 var updatedExpense = _mapper.Map<ExpenseAddModel>(model);
-                _expenseService.Edit(updatedExpense);
-                return Redirect(model.ReturnUrl);
+                await _expenseService.UpdateAsync(updatedExpense);
+                return Redirect(model.ReturnUrl ?? "/");
             }
             return View(model);
         }
 
         [HttpPost("{id:int}/delete")]
-        public IActionResult Delete(int id)
+        public async Task<IActionResult> Delete(int id)
         {
-            _expenseService.Delete(id);
+            await _expenseService.DeleteAsync(id);
             return Redirect(Request.Headers["Referer"].ToString());
         }
     }

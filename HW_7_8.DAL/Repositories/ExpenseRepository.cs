@@ -7,52 +7,67 @@ namespace HW_7_8.DAL.Repositories
 {
     public class ExpenseRepository : IExpenseRepository
     {
-        private readonly HomeAccountingDbContext dbContext;
+        private readonly HomeAccountingDbContext _dbContext;
 
         public ExpenseRepository(HomeAccountingDbContext dbContext)
         {
-            this.dbContext = dbContext;
+            _dbContext = dbContext;
         }
 
-        public Expense? GetExpenseById(int id)
-            => dbContext.Expenses.Include(e => e.ExpenseCategory).SingleOrDefault(e => e.Id == id);
-
-        public Expense? GetExpenseWithoutCategory(int id)
-            => dbContext.Expenses.SingleOrDefault(e => e.Id == id);
-
-        public IEnumerable<Expense> GetExpensesBy(int month, int year) 
-            => dbContext.Expenses
-            .Include(e => e.ExpenseCategory)
-            .Where(e => e.DateCreated.Month == month && e.DateCreated.Year == year)
-            .OrderByDescending(e => e.DateCreated);
-
-        public IEnumerable<Expense> GetExpensesBy(int month, int year, string userId)
-            => dbContext.Expenses
-            .Include(e => e.ExpenseCategory)
-            .Where(e => e.DateCreated.Month == month && e.DateCreated.Year == year && e.User.Id == userId)
-            .OrderByDescending(e => e.DateCreated);
-
-        public IEnumerable<Expense> GetExpensesBy(int month, int year, Category category) 
-            => dbContext.Expenses
-            .Include(e => e.ExpenseCategory)
-            .Where(e => e.DateCreated.Month == month && e.DateCreated.Year == year && e.ExpenseCategory == category);
-
-        public void Add(Expense expense)
+        public async Task<Expense?> GetExpenseByIdAsync(int id)
         {
-            dbContext.Expenses.Add(expense);
-            dbContext.SaveChanges();
+            return await _dbContext.Expenses.Include(e => e.ExpenseCategory).SingleOrDefaultAsync(e => e.Id == id);
         }
 
-        public void Delete (int id)
+        public async Task<Expense?> GetExpenseWithoutCategoryAsync(int id)
         {
-            dbContext.Expenses.Remove(GetExpenseWithoutCategory(id));
-            dbContext.SaveChanges();
+            return await _dbContext.Expenses.SingleOrDefaultAsync(e => e.Id == id);
         }
 
-        public void Update (Expense expense)
+        public async Task<IEnumerable<Expense>> GetExpensesAsync(int month, int year)
         {
-            dbContext.Expenses.Update(expense);
-            dbContext.SaveChanges();
+            return await _dbContext.Expenses
+                .Include(e => e.ExpenseCategory)
+                .Where(e => e.DateCreated.Month == month && e.DateCreated.Year == year)
+                .OrderByDescending(e => e.DateCreated)
+                .ToListAsync();
+        }
+
+        public async Task<IEnumerable<Expense>> GetExpensesAsync(int month, int year, string userId)
+        {
+            return await _dbContext.Expenses
+                .Include(e => e.ExpenseCategory)
+                .Where(e => e.DateCreated.Month == month && e.DateCreated.Year == year && e.User.Id == userId)
+                .OrderByDescending(e => e.DateCreated)
+                .ToListAsync();
+        }
+
+        public async Task<IEnumerable<Expense>> GetExpensesAsync(int month, int year, Category category)
+        {
+            return await _dbContext.Expenses
+                .Include(e => e.ExpenseCategory)
+                .Where(e => e.DateCreated.Month == month && e.DateCreated.Year == year && e.ExpenseCategory == category)
+                .ToListAsync();
+        }
+
+        public async Task<int> AddAsync(Expense expense)
+        {
+            _dbContext.Expenses.Add(expense);
+            await _dbContext.SaveChangesAsync();
+            return expense.Id;
+        }
+
+        public async Task DeleteAsync(int id)
+        {
+            var expense = await GetExpenseWithoutCategoryAsync(id);
+            _dbContext.Expenses.Remove(expense);
+            await _dbContext.SaveChangesAsync();
+        }
+
+        public async Task UpdateAsync(Expense expense)
+        {
+            _dbContext.Expenses.Update(expense);
+            await _dbContext.SaveChangesAsync();
         }
     }
 }

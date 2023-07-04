@@ -1,7 +1,5 @@
-using AutoMapper;
 using HW_7_8.DAL.Repositories;
 using HW_7_8.DAL.Database;
-using HW_7_8.Infrastructure;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;

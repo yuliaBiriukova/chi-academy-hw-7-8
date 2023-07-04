@@ -41,7 +41,7 @@
                 <td>@expense.Comment</td>
               }
               <td class="d-flex justify-content-start">
-                <a class="btn btn-secondary-light btn-secondary me-2" asp-controller="Expenses" asp-action="Edit" asp-route-id="@expense.Id">Edit</a>
+                <a class="btn btn-secondary-light btn-secondary me-2" asp-controller="Expenses" asp-action="Update" asp-route-id="@expense.Id">Edit</a>
                 <form asp-controller="Expenses" asp-action="Delete" asp-route-id="@expense.Id">
                     <button class="btn btn-secondary-light btn-secondary" type="submit">Delete</button>
                 </form>

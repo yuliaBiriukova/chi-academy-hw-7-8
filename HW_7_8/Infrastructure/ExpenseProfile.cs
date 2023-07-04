@@ -10,14 +10,12 @@ namespace HW_7_8.Infrastructure
         public ExpenseProfile()
         {
             CreateMap<ExpensesEnumerableModel, ExpensesEnumerableViewModel>()
-                .ForMember(dest => dest.TotalCost, opt => opt.MapFrom(src => src.Expenses.Sum(e => e.Cost))); ;
-            CreateMap<ExpensesEnumerableViewModel, ExpensesEnumerableModel>();
-            CreateMap<Expense, ExpenseDataModel>();
-            CreateMap<ExpenseDataModel, Expense> ();
-            CreateMap<ExpenseAddModel, ExpenseAddViewModel>();
-            CreateMap<ExpenseAddViewModel, ExpenseAddModel>();
-            CreateMap<ExpenseAddModel, ExpenseEditViewModel>();
-            CreateMap<ExpenseEditViewModel, ExpenseAddModel>();
+                .ForMember(dest => dest.TotalCost, opt => opt.MapFrom(src => src.Expenses.Sum(e => e.Cost)));
+            CreateMap<Expense, ExpenseDataModel>().ReverseMap();
+            CreateMap<ExpenseAddModel, ExpenseAddViewModel>().ReverseMap();
+            CreateMap<ExpenseAddModel, ExpenseUpdateViewModel>().ReverseMap();
+            CreateMap<ExpenseDataModel, ExpenseUpdateViewModel>()
+                .ForMember(dest => dest.SelectedCategoryId, opt => opt.MapFrom(src => src.ExpenseCategory.Id.ToString()));
         }
     }
 }

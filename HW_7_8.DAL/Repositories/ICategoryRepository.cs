@@ -4,14 +4,14 @@ namespace HW_7_8.DAL.Repositories
 {
     public interface ICategoryRepository
     {
-        public Category GetCategoryById(int id);
+        public Task<Category> GetCategoryByIdAsync(int id);
 
-        public IEnumerable<Category> GetCategoriesByUserId(string userId);
+        public Task<IEnumerable<Category>> GetCategoriesByUserIdAsync(string userId);
 
-        public void Add(Category category);
+        public Task<int> AddAsync(Category category);
 
-        public void Delete(int id);
+        public Task DeleteAsync(int id);
 
-        public void Update(Category category);
+        public Task UpdateAsync(Category category);
     }
 }

@@ -1,13 +1,8 @@
-﻿@model ExpenseEditViewModel
+﻿@model ExpenseUpdateViewModel
 @inject ICategoryRepository Repository
 @{
     ViewBag.Title = "Edit expense";
-    var categories = Repository.GetCategoriesByUserId(User.FindFirstValue(ClaimTypes.NameIdentifier));
-    var categoriesSelectList = new List<SelectListItem>();
-    foreach (var categoty in categories)
-    {
-        categoriesSelectList.Add(new SelectListItem { Text = categoty.Name, Value = categoty.Id.ToString() });
-    }
+    var dateCreated = String.Format("{0:yyyy-MM-dd}", Model.DateCreated);
 }
 
 <div class="d-flex flex-column">
@@ -19,10 +14,20 @@
 
     <form asp-controller="Expenses" asp-action="Edit" method="post" class="form-horizontal my-3">
         <div class="row required mb-3">
-            <label class="form-label control-label">Category</label>
             <div>
-                <select class="form-select" asp-for="SelectedCategoryId" asp-items="@categoriesSelectList"></select>
-                <span asp-validation-for="SelectedCategoryId" class="text-danger"></span>
+                <label class="form-label control-label">Date</label>
+                <input asp-for="DateCreated" type="date" value=@dateCreated class="form-control date-input-field" placeholder="Select date" lang="en-US" max=@Model.CurrentDate min=@Model.MinDate />
+                <span asp-validation-for="DateCreated" class="text-danger"></span>
+            </div>
+        </div>
+        <div class="row required mb-3">
+            <label class="form-label control-label">Category</label>
+            <div class="d-flex justify-content-start">
+                <div class="me-3">
+                    <select class="form-select" asp-for="SelectedCategoryId" asp-items="@Model.CategoriesSelectList"></select>
+                    <span asp-validation-for="SelectedCategoryId" class="text-danger"></span>
+                </div>
+                <a class="btn btn-secondary-light hover-primary btn-fixed-height" asp-controller="Categories" asp-action="Add">Add category</a>
             </div>
         </div>
         <div class="row required mb-3">

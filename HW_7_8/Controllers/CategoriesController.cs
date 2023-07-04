@@ -24,10 +24,11 @@ namespace HW_7_8.Controllers
             _userManager = userManager;
         }
 
-        public IActionResult Index()
+        [HttpGet("")]
+        public async Task<IActionResult> Index()
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var categories = _categoryService.GetAllByUserId(userId);
+            var categories = await _categoryService.GetAllByUserIdAsync(userId);
             var model = new CategoriesEnumerableViewModel()
             {
                 Categories = categories,
@@ -48,41 +49,43 @@ namespace HW_7_8.Controllers
         [HttpPost("new")]
         public async Task<IActionResult> Add(CategoryAddViewModel model)
         {
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var user = await _userManager.FindByIdAsync(userId);
             if (ModelState.IsValid)
             {
+                var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                var user = await _userManager.FindByIdAsync(userId);
+
                 var category = _mapper.Map<CategoryDataModel>(model);
-                _categoryService.Add(category, user);
-                return Redirect(model.ReturnUrl);
+                var newCategoryId = await _categoryService.AddAsync(category, user);
+
+                return Redirect(model.ReturnUrl ?? "/");
             }
             return View(model); 
         }
 
         [HttpGet("{id:int}")]
-        public IActionResult Edit(int id)
+        public async Task<IActionResult> Update(int id)
         {
-            var category = _categoryService.GetCategoryById(id);
-            var model = _mapper.Map<CategoryEditViewModel>(category);
+            var category = await _categoryService.GetCategoryByIdAsync(id);
+            var model = _mapper.Map<CategoryUpdateViewModel>(category);
             return View(model);
         }
 
         [HttpPost("{id:int}")]
-        public IActionResult Edit(CategoryEditViewModel model)
+        public async Task<IActionResult> Update(CategoryUpdateViewModel model)
         {
             if (ModelState.IsValid)
             {
                 var category = _mapper.Map<CategoryDataModel>(model);
-                _categoryService.Edit(category);
+                await _categoryService.UpdateAsync(category);
                 return RedirectToAction("Index");
             }
             return View(model);
         }
 
         [HttpPost("{id:int}/delete")]
-        public IActionResult Delete(int id)
+        public async Task<IActionResult> Delete(int id)
         {
-            _categoryService.Delete(id);
+            await _categoryService.DeleteAsync(id);
             return RedirectToAction("Index");
         }
     }

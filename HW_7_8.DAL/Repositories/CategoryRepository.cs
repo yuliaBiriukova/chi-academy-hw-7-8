@@ -1,39 +1,46 @@
 ﻿using HW_7_8.DAL.Database;
 using HW_7_8.DAL.Entities;
+using Microsoft.EntityFrameworkCore;
 
 namespace HW_7_8.DAL.Repositories
 {
     public class CategoryRepository : ICategoryRepository
     {
-        private readonly HomeAccountingDbContext dbContext;
+        private readonly HomeAccountingDbContext _dbContext;
 
         public CategoryRepository(HomeAccountingDbContext dbContext)
         {
-            this.dbContext = dbContext;
+            _dbContext = dbContext;
         }
 
-        public Category GetCategoryById(int id) 
-            => dbContext.Categories.SingleOrDefault(c => c.Id == id);
-
-        public IEnumerable<Category> GetCategoriesByUserId(string userId)
-            => dbContext.Categories.Where(c => c.User.Id == userId || c.User.Id == null);
-
-        public void Add(Category category)
+        public async Task<Category> GetCategoryByIdAsync(int id)
         {
-            dbContext.Categories.Add(category);
-            dbContext.SaveChanges();
+            return await _dbContext.Categories.SingleOrDefaultAsync(c => c.Id == id);
         }
 
-        public void Delete(int id)
+        public async Task<IEnumerable<Category>> GetCategoriesByUserIdAsync(string userId)
         {
-            dbContext.Categories.Remove(GetCategoryById(id));
-            dbContext.SaveChanges();
+            return await _dbContext.Categories.Where(c => c.User.Id == userId || c.User.Id == null).ToListAsync();
         }
 
-        public void Update(Category category)
+        public async Task<int> AddAsync(Category category)
         {
-            dbContext.Categories.Update(category);
-            dbContext.SaveChanges();
+            _dbContext.Categories.Add(category);
+            await _dbContext.SaveChangesAsync();
+            return category.Id;
+        }
+
+        public async Task DeleteAsync(int id)
+        {
+            var category = await GetCategoryByIdAsync(id);
+            _dbContext.Categories.Remove(category);
+            await _dbContext.SaveChangesAsync();
+        }
+
+        public async Task UpdateAsync(Category category)
+        {
+            _dbContext.Categories.Update(category);
+            await _dbContext.SaveChangesAsync();
         }
     }
 }

@@ -1,21 +1,21 @@
 ﻿using HW_7_8.BLL.Models;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace HW_7_8.BLL.Services
 {
     public interface IExpenseService
     {
-        ExpensesEnumerableModel GetCurrentByUserId(string userId);
+        public Task<ExpensesEnumerableModel> GetCurrentByUserIdAsync(string userId);
 
-        ExpensesEnumerableModel GetByMonth(string userId, string monthName, int year);
+        public Task<ExpensesEnumerableModel> GetByMonthAsync(string userId, string monthName, int year);
 
-        ExpenseDataModel GetById(int id);
+        public Task<ExpenseDataModel> GetByIdAsync(int id);
 
-        void Add(ExpenseAddModel expense, IdentityUser user);
+        public Task<int> AddAsync(ExpenseAddModel expense, IdentityUser user);
 
-        void Edit(ExpenseAddModel updatedExpense);
+        public Task UpdateAsync(ExpenseAddModel updatedExpense);
 
-        void Delete(int id);
-
+        public Task DeleteAsync(int id);
     }
 }

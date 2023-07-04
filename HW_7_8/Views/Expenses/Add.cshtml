@@ -2,14 +2,6 @@
 @inject ICategoryRepository Repository
 @{
     ViewBag.Title = "Add new expense";
-    var categories = Repository.GetCategoriesByUserId(User.FindFirstValue(ClaimTypes.NameIdentifier));
-    var categoriesSelectList = new List<SelectListItem>();
-    foreach (var categoty in categories)
-    {
-        categoriesSelectList.Add(new SelectListItem { Text = categoty.Name, Value = categoty.Id.ToString() });
-    }
-    var currentDate = @DateTime.Now.ToString("yyyy-MM-dd");
-    var minDate = "2019-01-01";
 }
 
 <div class="d-flex flex-column">
@@ -23,7 +15,7 @@
         <div class="row required mb-3">
             <div>
                 <label class="form-label control-label">Date</label>
-                <input asp-for="DateCreated" type="date" value="@currentDate" class="form-control date-input-field" placeholder="Select date" lang="en-US" max="@currentDate" min=@minDate/>
+                <input asp-for="DateCreated" type="date" value=@Model.CurrentDate class="form-control date-input-field" placeholder="Select date" lang="en-US" max=@Model.CurrentDate min=@Model.MinDate />
                 <span asp-validation-for="DateCreated" class="text-danger"></span>
             </div>
         </div>
@@ -31,7 +23,7 @@
             <label class="form-label control-label">Category</label>
             <div class="d-flex justify-content-start">
                 <div class="me-3">
-                    <select class="form-select" asp-for="SelectedCategoryId" asp-items="@categoriesSelectList">
+                    <select class="form-select" asp-for="SelectedCategoryId" asp-items="@Model.CategoriesSelectList">
                         <option value="">Select category</option>
                     </select>
                     <span asp-validation-for="SelectedCategoryId" class="text-danger"></span>

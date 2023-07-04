@@ -29,6 +29,7 @@ namespace HW_7_8.Controllers
             {
                 var user = new IdentityUser { UserName = model.Email, Email = model.Email };
                 var result = await _userManager.CreateAsync(user, model.Password);
+
                 if (result.Succeeded)
                 {
                     await _signInManager.SignInAsync(user, isPersistent: false);
@@ -57,8 +58,11 @@ namespace HW_7_8.Controllers
                 var result = await _signInManager.PasswordSignInAsync(model.Email, model.Password, false, false);
                 if (result.Succeeded)
                 {
-                    if(!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl)) 
+                    if(!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
+                    {
                         return Redirect(returnUrl);
+                    }
+ 
                     return RedirectToAction("Index", "Expenses");
                 }
 

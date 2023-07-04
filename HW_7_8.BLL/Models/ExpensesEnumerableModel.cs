@@ -24,20 +24,6 @@ namespace HW_7_8.BLL.Models
             Month = currentDate.Month;
             Year = currentDate.Year;
             MonthName = CultureInfo.InvariantCulture.DateTimeFormat.GetMonthName(Month);
-
-            var monthNames = CultureInfo.InvariantCulture.DateTimeFormat.MonthNames.SkipLast(1).ToArray();
-            MonthNamesSelectList = new List<SelectListItem>();
-            foreach (var month in monthNames)
-            {
-                MonthNamesSelectList.Add(new SelectListItem { Text = month, Value = month });
-            }
-
-            var years = Enumerable.Range(2019, DateTime.Now.Year - 2019 + 1).OrderDescending();
-            YearsSelectList = new List<SelectListItem>();
-            foreach (var year in years)
-            {
-                YearsSelectList.Add(new SelectListItem { Text = year.ToString(), Value = year.ToString() });
-            } 
         }
 
         public ExpensesEnumerableModel(string monthName, int year)
