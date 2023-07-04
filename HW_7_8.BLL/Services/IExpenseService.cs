@@ -5,7 +5,7 @@ namespace HW_7_8.BLL.Services
 {
     public interface IExpenseService
     {
-        ExpensesEnumerableModel GetCurrentByUserId(string userId);
+        ExpensesEnumerableModel GetCurrentByUserId:)(string userId);
 
         ExpensesEnumerableModel GetByMonth(string userId, string monthName, int year);
 
