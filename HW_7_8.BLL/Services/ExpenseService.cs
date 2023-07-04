@@ -20,7 +20,7 @@ namespace HW_7_8.BLL.Services
             _categoryRepository = categoryRepository;
         }
 
-        public ExpensesEnumerableModel GetCurrentByUserIdGG(string userId)
+        public ExpensesEnumerableModel GetCurrentByUserId(string userId)
         {
             var model = new ExpensesEnumerableModel();
             model.Expenses = _expenseRepository.GetExpensesBy(model.Month, model.Year, userId);
