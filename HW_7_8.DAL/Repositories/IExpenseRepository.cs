@@ -8,11 +8,7 @@ namespace HW_7_8.DAL.Repositories
 
         public Task<Expense?> GetExpenseWithoutCategoryAsync(int id);
 
-        public Task<IEnumerable<Expense>> GetExpensesAsync(int month, int year);
-
         public Task<IEnumerable<Expense>> GetExpensesAsync(int month, int year, string userId);
-
-        public Task<IEnumerable<Expense>> GetExpensesAsync(int month, int year, Category category);
 
         public Task<int> AddAsync(Expense expense);
 

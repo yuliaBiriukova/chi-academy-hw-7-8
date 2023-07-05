@@ -24,29 +24,12 @@ namespace HW_7_8.DAL.Repositories
             return await _dbContext.Expenses.SingleOrDefaultAsync(e => e.Id == id);
         }
 
-        public async Task<IEnumerable<Expense>> GetExpensesAsync(int month, int year)
-        {
-            return await _dbContext.Expenses
-                .Include(e => e.ExpenseCategory)
-                .Where(e => e.DateCreated.Month == month && e.DateCreated.Year == year)
-                .OrderByDescending(e => e.DateCreated)
-                .ToListAsync();
-        }
-
         public async Task<IEnumerable<Expense>> GetExpensesAsync(int month, int year, string userId)
         {
             return await _dbContext.Expenses
                 .Include(e => e.ExpenseCategory)
                 .Where(e => e.DateCreated.Month == month && e.DateCreated.Year == year && e.User.Id == userId)
                 .OrderByDescending(e => e.DateCreated)
-                .ToListAsync();
-        }
-
-        public async Task<IEnumerable<Expense>> GetExpensesAsync(int month, int year, Category category)
-        {
-            return await _dbContext.Expenses
-                .Include(e => e.ExpenseCategory)
-                .Where(e => e.DateCreated.Month == month && e.DateCreated.Year == year && e.ExpenseCategory == category)
                 .ToListAsync();
         }
 
