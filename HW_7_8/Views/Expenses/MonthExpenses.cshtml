@@ -1,7 +1,7 @@
 ﻿@model ExpensesEnumerableViewModel
 
 @{
-    ViewBag.Title = @Model.MonthName + " " + @Model.Year;
+    ViewBag.Title = @Model.MonthName + " " + @Model.Year + " | Home accounting";
 }
 
 @await Html.PartialAsync("ExpensesTable", @Model)

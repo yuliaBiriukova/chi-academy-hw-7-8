@@ -4,18 +4,16 @@ namespace HW_7_8.DAL.Repositories
 {
     public interface IExpenseRepository
     {
-        public Expense? GetExpenseById(int id);
+        public Task<Expense?> GetExpenseByIdAsync(int id);
 
-        public IEnumerable<Expense> GetExpensesBy(int month, int year);
+        public Task<Expense?> GetExpenseWithoutCategoryAsync(int id);
 
-        public IEnumerable<Expense> GetExpensesBy(int month, int year, string userId);
+        public Task<IEnumerable<Expense>> GetExpensesAsync(int month, int year, string userId);
 
-        public IEnumerable<Expense> GetExpensesBy(int month, int year, Category category);
+        public Task<int> AddAsync(Expense expense);
 
-        public void Add(Expense expense);
+        public Task DeleteAsync(int id);
 
-        public void Delete(int id);
-
-        public void Update(Expense expense);
+        public Task UpdateAsync(Expense expense);
     }
 }

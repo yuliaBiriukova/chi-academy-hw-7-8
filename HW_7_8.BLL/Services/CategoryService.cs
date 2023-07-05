@@ -17,35 +17,35 @@ namespace HW_7_8.BLL.Services
             _categoryRepository = categoryRepository;
         }
 
-        public IEnumerable<Category> GetAllByUserId(string userId)
+        public async Task<IEnumerable<Category>> GetAllByUserIdAsync(string userId)
         {
-            return _categoryRepository.GetCategoriesByUserId(userId);
+            return await _categoryRepository.GetCategoriesByUserIdAsync(userId);
         }
 
-        public CategoryDataModel GetCategoryById(int id)
+        public async Task<CategoryDataModel> GetCategoryByIdAsync(int id)
         {
-            var category = _categoryRepository.GetCategoryById(id);
+            var category = await _categoryRepository.GetCategoryByIdAsync(id);
             return _mapper.Map<CategoryDataModel>(category);
         }
 
-        public void Add(CategoryDataModel category, IdentityUser user)
+        public async Task<int> AddAsync(CategoryDataModel category, IdentityUser user)
         {
-            _categoryRepository.Add(new Category()
+            return await _categoryRepository.AddAsync(new Category()
             {
                 Name = category.Name,
                 User = user
             });
         }
 
-        public void Edit(CategoryDataModel newCategory)
+        public async Task UpdateAsync(CategoryDataModel newCategory)
         {
             var category = _mapper.Map<Category>(newCategory);
-            _categoryRepository.Update(category);
+            await _categoryRepository.UpdateAsync(category);
         }
 
-        public void Delete(int id)
+        public async Task DeleteAsync(int id)
         {
-            _categoryRepository.Delete(id);
+            await _categoryRepository.DeleteAsync(id);
         }
     }
 }
